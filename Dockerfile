@@ -1,15 +1,19 @@
 # Use an official Python runtime as the parent image
 FROM python:3.11-bullseye
+
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     imagemagick \
     ghostscript \
     fonts-roboto \
+    cron \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Update font cache
 RUN fc-cache -f -v
 
 RUN sed -i '/<policy domain="path" rights="none" pattern="@\*"/d' /etc/ImageMagick-6/policy.xml
+
 # Clean up APT when done
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -21,7 +25,7 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Install dependencies
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt --no-cache-dir
 
 # Copy the local package directory content into the container at /app
 COPY . /app
@@ -34,5 +38,11 @@ EXPOSE 31415
 # Print environment variables (for debugging purposes, you can remove this line if not needed)
 RUN ["printenv"]
 
+# Add cron job
+RUN echo "0 */1 * * * /bin/bash /app/automate.sh" > /etc/cron.d/automate
+RUN chmod 0644 /etc/cron.d/automate
+RUN crontab /etc/cron.d/automate
+RUN touch /var/log/cron.log
+
 # Run Python script when the container launches
-CMD ["python", "./runShortGPT.py"]
+CMD cron && tail -f /var/log/cron.log

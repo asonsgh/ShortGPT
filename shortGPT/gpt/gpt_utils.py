@@ -2,7 +2,7 @@ import json
 import os
 import re
 from time import sleep, time
-
+import g4f
 import openai
 import tiktoken
 import yaml
@@ -82,11 +82,17 @@ def gpt3Turbo_completion(chat_prompt="", system="You are an AI that can give the
                     {"role": "system", "content": system},
                     {"role": "user", "content": chat_prompt}
                 ]
-            response = openai.chat.completions.create(
-                model=model,
-                messages=messages,
-                max_tokens=max_tokens,
-                temperature=temp)
+            # response = openai.chat.completions.create(
+            #     model=model,
+            #     messages=messages,
+            #     max_tokens=max_tokens,
+            #     temperature=temp)
+            
+            g4f.ChatCompletion.create(
+                model=g4f.models.gpt_35_turbo_16k_0613,
+                messages=[{"role": "system", "content": system}, {"role": "user", "content": chat_prompt}],
+            )
+            
             text = response.choices[0].message.content.strip()
             if remove_nl:
                 text = re.sub('\s+', ' ', text)

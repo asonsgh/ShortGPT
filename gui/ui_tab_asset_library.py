@@ -1,6 +1,7 @@
 import os
 import re
 import shutil
+import dotenv
 
 import gradio as gr
 
@@ -8,6 +9,7 @@ from gui.asset_components import AssetComponentsUtils
 from gui.ui_abstract_component import AbstractComponentUI
 from shortGPT.config.asset_db import AssetDatabase, AssetType
 
+dotenv.load_dotenv()
 
 class AssetLibrary(AbstractComponentUI):
     def __init__(self):
@@ -143,7 +145,7 @@ class AssetLibrary(AbstractComponentUI):
             asset_link = f"https://youtube.com/embed/{asset_link_split}"
             embed_html = f'<iframe width="{embed_width}" height="{embed_height}" src="{asset_link}"></iframe>'
         elif 'public/' in asset_link:
-            asset_link = f"http://localhost:31415/file={asset_link}"
+            asset_link = f"{os.environ.get('PUBLIC_URL')}/{asset_link}"
             file_ext = asset_link.split('.')[-1]
 
             if file_ext in ['mp3', 'wav', 'ogg']:
