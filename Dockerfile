@@ -43,6 +43,16 @@ RUN echo "0 */1 * * * /bin/bash /app/automate.sh" > /etc/cron.d/automate
 RUN chmod 0644 /etc/cron.d/automate
 RUN crontab /etc/cron.d/automate
 RUN touch /var/log/cron.log
-
 # Run Python script when the container launches
 CMD cron && tail -f /var/log/cron.log
+
+
+# To run ShortGPT docker:
+
+#First make a .env file with the API keys like this:
+#OPENAI_API_KEY=sk-_put_your_openai_api_key_here
+#ELEVENLABS_API_KEY=put_your_eleven_labs_api_key_here
+#PEXELS_API_KEY=put_your_pexels_api_key_here
+#docker build -t short_gpt_docker:latest .
+#docker run -p 31415:31415 --env-file .env short_gpt_docker:latest
+#docker save short_gpt_docker > short_gpt_docker.tar
